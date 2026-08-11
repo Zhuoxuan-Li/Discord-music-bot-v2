@@ -68,6 +68,16 @@ async def play(ctx, url):
         info = music.extract_info(url, download=False)
         audio_url = info["url"]
 
+    
+    ffmpeg_options = (
+         "before_options": (
+            "-reconnect 1 "
+            "-reconnect_streamed 1 "
+            "-reconnect_delay_max 5"
+        ),
+        "options": "-vn"
+    )
+
     source = discord.FFmpegPCMAudio(audio_url)
 
     ctx.voice_client.play(source)

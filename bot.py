@@ -65,7 +65,7 @@ async def play(ctx, url):
     }
 
     with yt_dlp.YoutubeDL(ydl_options) as music:
-        info = ydl.extract_info(url, download=False)
+        info = music.extract_info(url, download=False)
         audio_url = info["url"]
 
     source = discord.FFmpegPCMAudio(audio_url)
@@ -74,7 +74,31 @@ async def play(ctx, url):
 
     await ctx.send(f"正在播放：{info['title']}")
 
+@bot.command()
+async def pause(ctx):
 
+    if ctx.voice_client is None:
+        await ctx.send("机器人目前不在语音频道。")
+        return
+
+    if ctx.voice_client.is_playing():
+        ctx.voice_client.pause()
+        await ctx.send("音乐已暂停。")
+    else:
+        await ctx.send("目前没有正在播放的音乐。")
+
+@bot.command()
+async def resume(ctx):
+
+    if ctx.voice_client is None:
+        await ctx.send("机器人目前不在语音频道。")
+        return
+
+    if ctx.voice_client.is_paused():
+        ctx.voice_client.resume()
+        await ctx.send("音乐已继续播放。")
+    else:
+        await ctx.send("目前没有暂停的音乐。")
 
 
 bot.run(TOKEN)

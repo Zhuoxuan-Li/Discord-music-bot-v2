@@ -44,6 +44,8 @@ async def leave(ctx):
     if ctx.voice_client is None:
         await ctx.send("机器人目前不在语音频道。")
         return
+    
+    music_queue.clear()
 
     await ctx.voice_client.disconnect()
 
@@ -100,8 +102,10 @@ async def play(ctx, url):
     }
     
     if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-
         music_queue.append(song)
+        await ctx.send(
+        f"已加入播放队列：{song['title']}"
+    )
 
         return
 
@@ -158,7 +162,7 @@ async def skip(ctx):
 
     if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
         ctx.voice_client.stop()
-        await ctx.send("音乐已停止。")
+        await ctx.send("已跳过当前歌曲。")
     else:
         await ctx.send("目前没有正在播放的音乐。")
 

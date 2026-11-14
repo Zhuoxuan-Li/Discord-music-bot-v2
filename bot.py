@@ -3,6 +3,9 @@ import os
 import asyncio
 import logging
 from collections import deque
+import logging
+from openai import OpenAIError
+from llm_service import chat_with_deepseek
 
 import discord
 import yt_dlp
@@ -12,7 +15,7 @@ from dotenv import load_dotenv
 
 # ==============================
 # 1. 基础配置
-# ==============================
+# ==============================F
 
 load_dotenv()
 
@@ -513,6 +516,40 @@ async def on_command_error(ctx, error):
     )
 
     await ctx.send("❌ 命令执行时出现错误，请查看终端日志。")
+
+
+@bot.command()
+async def chat(ctx, *, message: str = None):
+
+    if not message:
+        await ctx.send("请输入问题，例如：!chat 你好")
+        return
+
+    async with ctx.typing():
+        try:
+            reply = await chat_with_deepseek(message)
+
+        except OpenAIError:
+            logging.exception("DeepSeek API 调用失败")
+            await ctx.send(
+                "❌ AI 服务暂时不可用，请稍后再试。"
+            )
+            return
+
+        except Exception:
+            logging.exception("聊天命令发生异常")
+            await ctx.send(
+                "❌ 处理消息时出现错误。"
+            )
+            return
+
+    # Discord 单条普通消息有长度限制
+    # 分段发送，避免过长回复失败
+    for start in range(0, len(reply), 1900):
+        await ctx.send(
+            reply[start:start + 1900],
+            allowed_mentions=discord.AllowedMentions.none()
+        )
 
 
 # ==============================

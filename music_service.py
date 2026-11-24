@@ -75,21 +75,20 @@ def extract_song(url):
 
 
 # ==========================================
-# 5. 创建 FFmpeg Opus 音频源
+# 5. 创建 FFmpeg PCM 音频源
 # ==========================================
 
 def create_audio_source(audio_url):
 
-    logger.info("正在启动 FFmpeg Opus 音频源")
+    logger.info("正在启动 FFmpeg PCM 音频源")
 
-    source = discord.FFmpegOpusAudio(
+    source = discord.FFmpegPCMAudio(
         audio_url,
-        bitrate=128,
         before_options=FFMPEG_BEFORE_OPTIONS,
         options=FFMPEG_OPTIONS
     )
 
-    logger.info("FFmpeg Opus 音频源创建成功")
+    logger.info("FFmpeg PCM 音频源创建成功")
 
     return source
 
